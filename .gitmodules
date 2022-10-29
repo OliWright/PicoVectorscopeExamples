@@ -1,0 +1,3 @@
+[submodule "PicoVectorscope"]
+	path = PicoVectorscope
+	url = git@github.com:OliWright/PicoVectorscope.git
