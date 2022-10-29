@@ -11,8 +11,6 @@ if (PICO_SDK_VERSION_STRING VERSION_LESS "1.3.0")
     message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
 endif()
 
-#set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
-
 # Initialize the SDK
 pico_sdk_init()
 
@@ -31,7 +29,7 @@ include(PicoVectorscope/extras/extras.cmake)
 
 target_sources(${PROJECT_NAME} PRIVATE
         src/invadersfromspace.cpp
-        src/rickroll.cpp
+        #src/rickroll.cpp
         src/spacerocksinspace.cpp
         src/spiral.cpp
         src/starfield.cpp
