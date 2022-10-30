@@ -71,18 +71,22 @@ void TextMode::UpdateAndRender(DisplayList& displayList, float dt)
 {
     static int32_t scrollX = 0;
     static int32_t scrollY = 0;
+    //if (Buttons::IsJustPressed(Buttons::Id::Left))
     if (Buttons::IsHeld(Buttons::Id::Left))
     {
         --scrollX;
     }
+    //if (Buttons::IsJustPressed(Buttons::Id::Right))
     if (Buttons::IsHeld(Buttons::Id::Right))
     {
         ++scrollX;
     }
+    //if (Buttons::IsJustPressed(Buttons::Id::Thrust))
     if (Buttons::IsHeld(Buttons::Id::Thrust))
     {
         --scrollY;
     }
+    //if (Buttons::IsJustPressed(Buttons::Id::Fire))
     if (Buttons::IsHeld(Buttons::Id::Fire))
     {
         ++scrollY;
