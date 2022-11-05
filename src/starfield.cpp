@@ -20,31 +20,25 @@
 
 #include "picovectorscope.h"
 
-static constexpr uint32_t kNumStars = 1000;
-
-// Fixed-point type for storing the coordinates of stars.  16-bit.
+// Compact storage for stars.  16-bit fixed-point scalars.
 typedef FixedPoint<8, 7, int16_t, int32_t, false> CompactStarCoordScalar;
 struct StarCoord
 {
     CompactStarCoordScalar x, y, z;
 };
+static constexpr uint32_t kNumStars = 1000;
+static StarCoord          s_stars[kNumStars];
 
 // Fixed-point type for performing most of our intermediate maths operations. 32-bit.
 typedef FixedPoint<8, 18, int32_t, int32_t, false> StarCoordIntermediate;
 
-constexpr float kProjFloat  = 0.25f; //< Controls the perspective projection
-constexpr float kNearZFloat = 32.f; //< How near do stars get before they wrap
-
-// Some derived constants in our fixed-point format
-constexpr StarCoordIntermediate kProj      = kProjFloat;
-constexpr StarCoordIntermediate kZOffset   = kNearZFloat;
-constexpr StarCoordIntermediate kNearZ     = kNearZFloat;
-constexpr StarCoordIntermediate kFarZ      = kNearZ + CompactStarCoordScalar::kMax;
-constexpr StarCoordIntermediate kRecipFarZ = kFarZ.recip();
+// Constants and derived constants
+constexpr StarCoordIntermediate kProj       = 0.25f; //< Controls the perspective projection
+constexpr StarCoordIntermediate kNearZ      = 32.f; //< How near do stars get before they wrap
+constexpr StarCoordIntermediate kFarZ       = kNearZ + CompactStarCoordScalar::kMax;
+constexpr StarCoordIntermediate kRecipFarZ  = kFarZ.recip();
 constexpr StarCoordIntermediate kBrightnessAtFarZ
     = Mul<CompactStarCoordScalar::kNumWholeBits, -4, 12>(kNearZ, kRecipFarZ);
-
-static StarCoord s_stars[kNumStars];
 
 static CompactStarCoordScalar s_starSpeed(2.f);
 
@@ -71,14 +65,8 @@ void Starfield::Init()
 
 void Starfield::UpdateAndRender(DisplayList& displayList, float dt)
 {
-    if (Buttons::IsJustPressed(Buttons::Id::Left))
-    {
-        s_starSpeed *= 0.75f;
-    }
-    if (Buttons::IsJustPressed(Buttons::Id::Right))
-    {
-        s_starSpeed *= 1.25f;
-    }
+    if (Buttons::IsJustPressed(Buttons::Id::Left)) s_starSpeed *= 0.75f;
+    if (Buttons::IsJustPressed(Buttons::Id::Right)) s_starSpeed *= 1.25f;
 
     for (StarCoord& star : s_stars)
     {
@@ -89,7 +77,7 @@ void Starfield::UpdateAndRender(DisplayList& displayList, float dt)
         }
 
         // Careful fixed-point maths to maintain precision
-        StarCoordIntermediate recipZ    = (StarCoordIntermediate(star.z) + kZOffset).recip();
+        StarCoordIntermediate recipZ    = (StarCoordIntermediate(star.z) + kNearZ).recip();
         StarCoordIntermediate projOverZ = Mul<0, 0>(kProj, recipZ);
         StarCoordIntermediate screenX
             = Mul<-4, CompactStarCoordScalar::kNumWholeBits>(projOverZ, star.x) + 0.5f;
