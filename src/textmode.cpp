@@ -32,7 +32,7 @@ static TileMap s_tileMap(
 class TextMode : public Demo
 {
 public:
-    TextMode() : Demo(-1) {}
+    TextMode() : Demo(0) {}
     void Init();
     void UpdateAndRender(DisplayList& displayList, float dt);
 };
