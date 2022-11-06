@@ -24,5 +24,6 @@
 
 extern const uint16_t s_invaderSprites[3][2][8];
 extern const uint8_t s_shieldSprite[16][3];
-extern const uint8_t s_playerSprite[8][2];
+extern const uint8_t s_playerSprite[3][8][2];
+extern const uint8_t s_invaderExplosion[8][2];
 extern const uint8_t s_bulletSprites[4][4][9][1];
