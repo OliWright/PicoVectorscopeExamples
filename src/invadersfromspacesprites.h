@@ -22,8 +22,14 @@
 
 #include "pico/types.h"
 
-extern const uint16_t s_invaderSprites[3][2][8];
-extern const uint8_t s_shieldSprite[16][3];
-extern const uint8_t s_playerSprite[3][8][2];
-extern const uint8_t s_invaderExplosion[8][2];
-extern const uint8_t s_bulletSprites[4][4][9][1];
+namespace InvadersFromSpace
+{
+
+extern const uint8_t kSpritesInvaders[3][2][8][2];
+extern const uint8_t kSpriteShield[16][3];
+extern const uint8_t kSpritePlayer[3][8][2];
+extern const uint8_t kSpriteInvaderExplosion[8][2];
+extern const uint8_t kSpritesBullets[4][4][9][1];
+extern const uint8_t kSpriteShieldExplosion[8][1];
+
+}
