@@ -1,15 +1,10 @@
 #include "picovectorscope.h"
+#include "gameshapes.h"
 
 //
 // Constants
 //
 
-typedef FixedPoint<4,20,int32_t,int32_t> GameScalar;
-typedef Vector2<GameScalar> GameVector2;
-typedef FixedPoint<1,20,int32_t,int32_t> Velocity;
-typedef Vector2<Velocity> VelocityVector2;
-typedef FixedPoint<1,20,int32_t,int32_t> Acceleration;
-typedef Vector2<Acceleration> AccelerationVector2;
 
 static constexpr float kGlobalScaleFloat = 0.015f;
 static constexpr int kTargetRefreshRate = 240; // FPS
@@ -126,13 +121,6 @@ static bool testCollisionOctagon(const GameVector2& p0, const GameVector2& p1, G
     return (dx < distance) && (dy < distance) && ((dx + dy) < distance);
 }
 
-template<typename T>
-static inline void wrap(Vector2<T>& vec)
-{
-    vec.x = vec.x.frac();
-    vec.y = vec.y.frac();
-}
-
 //
 // Classes and Structs
 //
@@ -204,73 +192,6 @@ struct Fragments
 };
 Fragment Fragments::s_fragments[Fragments::kMaxFragments] = {};
 uint Fragments::s_numFragments = 0;
-
-// Base class for all objects in the game.
-// This is classic OOP.
-struct BaseObject
-{
-    GameVector2 m_position;
-    VelocityVector2 m_velocity;
-    Intensity m_brightness;
-    bool m_active;
-
-    BaseObject() : m_active(false) {}
-
-    void Move()
-    {
-        m_position.x += m_velocity.x;
-        m_position.y += m_velocity.y;
-        wrap(m_position);
-    }
-};
-
-// An intermediate class for objects using a GameShape with scale and rotation
-struct ShapeObject : public BaseObject
-{
-    GameShape m_shape;
-    GameScalar m_rotation;
-    GameScalar m_scale;
-
-    ShapeObject() : BaseObject() {}
-
-    void Rotate(GameScalar angle)
-    {
-        m_rotation += angle;
-
-        if (m_rotation > GameScalar(kPi * 2.f))
-        {
-            m_rotation -= GameScalar(kPi * 2.f);
-        }
-        if (m_rotation < 0)
-        {
-            m_rotation += GameScalar(kPi * 2.f);
-        }
-    }
-
-    void CalcTransform(FixedTransform2D& outTransform)
-    {
-        SinTableValue s, c;
-        SinTable::SinCos(m_rotation, s, c);
-        outTransform.setAsRotation(s, c);
-
-        outTransform *= FixedTransform2D::ScalarType(m_scale);
-        outTransform.setTranslation(FixedTransform2D::Vector2Type(m_position.x, m_position.y));
-    }
-
-    void UpdateAndDraw(DisplayList& displayList)
-    {
-        if(!m_active)
-        {
-            return;
-        }
-
-        Move();
-
-        FixedTransform2D transform;
-        CalcTransform(transform);
-        PushGameShape(displayList, transform, m_shape, m_brightness);
-    }
-};
 
 // Bullets kill themselves after a while, and draw as a point
 struct Bullet : public BaseObject

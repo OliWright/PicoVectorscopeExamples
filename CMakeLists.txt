@@ -28,8 +28,10 @@ include(PicoVectorscope/vectorscope.cmake)
 include(PicoVectorscope/extras/extras.cmake)
 
 target_sources(${PROJECT_NAME} PRIVATE
+        src/gameshapes.cpp
         src/invadersfromspace.cpp
         src/invadersfromspacesprites.cpp
+        #src/invadersvectorhybrid.cpp
         #src/rickroll.cpp
         src/spacerocksinspace.cpp
         src/spiral.cpp
