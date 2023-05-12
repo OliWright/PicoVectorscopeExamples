@@ -8,18 +8,19 @@ static const ShapeVector2 points[] = {
 };
 static const uint32_t kNumPoints = sizeof(points) / sizeof(points[0]);
 
+static LogChannel s_spiralLog(false);
 class Spiral : public Demo
 {
 public:
-    Spiral(int order) : Demo(order) {}
+    Spiral() : Demo(-4, 150) {}
     void UpdateAndRender(DisplayList& displayList, float dt);
 };
-static Spiral s_spiral(0);
+static Spiral s_spiral;
 
 void Spiral::UpdateAndRender(DisplayList& displayList, float dt)
 {
     static float phase = 0.f;
-    phase += dt * 2;
+    phase += dt * 0.1;
     if (phase > (kPi * 2.f))
     {
         phase -= kPi * 2.f;
@@ -30,7 +31,7 @@ void Spiral::UpdateAndRender(DisplayList& displayList, float dt)
     constexpr uint32_t kCount = 15;
 
 #if 1
-    static uint32_t brightIdx = 0;
+    /*static*/ uint32_t brightIdx = 0;
     if(++brightIdx == kCount)
     {
         brightIdx = 0;
@@ -64,11 +65,14 @@ void Spiral::UpdateAndRender(DisplayList& displayList, float dt)
         localTransform *= 0.35f;
         float scale = 1.f - ((float) i / kCount);
         localTransform *= scale;
+        localTransform.m[0][0] *= 0.75f;
+        localTransform.m[1][0] *= 0.75f;
         localTransform.setTranslation(FixedTransform2D::Vector2Type(0.5f, 0.5f));
-        intensity = 0.75f;//1.f - ((float) i / kCount);
+        intensity = 1.f - ((float) i / kCount);
+        intensity = (intensity * intensity * 0.75f) + 0.25f;
         if(i == brightIdx)
         {
-            intensity = 4.f;
+            //intensity = 4.f;
         }
         PushShapeToDisplayList(displayList, points, kNumPoints, intensity, true /*closed*/, localTransform);
     }
