@@ -1,5 +1,6 @@
 #include "picovectorscope.h"
 #include "gameshapes.h"
+#include "buttonrecorder.h"
 
 //
 // Constants
@@ -52,7 +53,8 @@ static constexpr float kCastTest = (float) GameScalar(kSin1);
 static constexpr Velocity kThrustTest = Mul<1,-4>(Velocity(0.1f), kThrust);
 static constexpr Velocity kThrustTest2 = Mul<1,-4>(Velocity(-1.f), kThrust);
 
-static LogChannel SpaceRocks(true);
+static LogChannel SpaceRocks(false);
+#include "spacerocksdemo.hpp"
 
 //
 // Some helper functions
@@ -652,14 +654,12 @@ struct GameState
                 break;
 
             case State::AttractModeDemo:
-                Asteroid::DestroyAll();
-                for(int i = 0; i < 3; ++i)
-                {
-                    Asteroid::FindInactive()->InitRandom(Asteroid::Size::eLarge);
-                    Asteroid::FindInactive()->InitRandom(Asteroid::Size::eMedium);
-                    Asteroid::FindInactive()->InitRandom(Asteroid::Size::eSmall);
-                }
-                break;
+                ButtonRecorder::PlaybackEnable(s_demoStream, s_numDemoStreamNybbles);
+                s_numLives = kNumLives;
+                s_score = 0;
+                s_level = 0;
+                s_currentState = State::GameStartLevel;
+                // Fall through
 
             case State::GameStartLevel:
                 ConfigureAsteroidsForLevel(s_level);
@@ -669,6 +669,7 @@ struct GameState
             case State::GameWaitForShipSafe:
                 if(s_numLives == 0)
                 {
+                    ButtonRecorder::RecordingEnable(false);
                     ChangeState(State::GameOver);
                 }
                 break;
@@ -708,6 +709,7 @@ struct GameState
                     s_numLives = kNumLives;
                     s_score = 0;
                     s_level = 0;
+                    ButtonRecorder::RecordingEnable(true);
                     ChangeState(State::GameStartLevel);
                 }
                 break;
@@ -789,7 +791,7 @@ uint GameState::s_level;
 class SpaceRocksInSpace : public Demo
 {
 public:
-    SpaceRocksInSpace() : Demo(0, kTargetRefreshRate) {}
+    SpaceRocksInSpace() : Demo(-2, kTargetRefreshRate) {}
 
     void Init();
     void UpdateAndRender(DisplayList& displayList, float dt);
@@ -816,6 +818,7 @@ void SpaceRocksInSpace::Init()
 
 void SpaceRocksInSpace::UpdateAndRender(DisplayList& displayList, float dt)
 {
+    ButtonRecorder::Update();
     GameState::Update(GameState::Duration(dt));
 
     const char* message = nullptr;
