@@ -27,12 +27,15 @@ add_executable(${PROJECT_NAME})
 include(PicoVectorscope/vectorscope.cmake)
 include(PicoVectorscope/extras/extras.cmake)
 
+# I find it simplest to comment out here the examples that I'm not actively working on.
+# Particularly rickroll.cpp, because it's huge (it contains the video clip).
 target_sources(${PROJECT_NAME} PRIVATE
+        src/buttonrecorder.cpp
         src/gameshapes.cpp
         src/invadersfromspace.cpp
         src/invadersfromspacesprites.cpp
-        #src/invadersvectorhybrid.cpp
-        #src/rickroll.cpp
+        src/image.cpp
+        src/rickroll.cpp
         src/spacerocksinspace.cpp
         src/spiral.cpp
         src/starfield.cpp
