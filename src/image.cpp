@@ -6,21 +6,14 @@ static constexpr uint32_t kWidth = 300;
 static constexpr uint32_t kHeight = 200;
 
 static DisplayList::RasterDisplay s_rasterDisplay;
-extern bool g_overrideRasterSpeed;
 
 class Image : public Demo
 {
 public:
     Image() : Demo(-3, 60) {}
     void Init();
-    void Start()
-    {
-        g_overrideRasterSpeed = true;
-    }
-    void End()
-    {
-        g_overrideRasterSpeed = false;
-    }
+    void Start() {}
+    void End() {}
     void UpdateAndRender(DisplayList& displayList, float dt);
 };
 static Image s_image;
