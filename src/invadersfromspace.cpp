@@ -24,6 +24,8 @@
 #include "extras/bitmapfont.h"
 
 #include "invadersfromspacesprites.h"
+#include "invadersdemo.hpp"
+#include "buttonrecorder.h"
 
 namespace InvadersFromSpace
 {
@@ -665,10 +667,10 @@ struct GameState
             break;
 
         case State::AttractModeDemo:
+            ButtonRecorder::PlaybackEnable(s_demoStream, s_numDemoStreamNybbles);
             clearScreen();
             drawShields();
             Invader::ConfigureAllForLevel(0);
-            ;
             break;
 
         case State::GameStartLevel:
@@ -687,6 +689,7 @@ struct GameState
         case State::GameStartDelay:
             if (s_numLives == 0)
             {
+                ButtonRecorder::RecordingEnable(false);
                 ChangeState(State::GameOver);
             }
             if (s_playerShip.m_state == PlayerShip::State::eExploding)
@@ -726,7 +729,7 @@ struct GameState
         {
         case State::AttractModeTitle:
             drawCentredTextSlowly(kTextPlay, sizeof(kTextPlay) - 1, kDisplayWidth >> 1, 40,
-                                  s_numFramesInCurrentState);
+                                  s_numFramesInCurrentState - 1);
             drawCentredTextSlowly(kTextInvaders, sizeof(kTextInvaders) - 1, kDisplayWidth >> 1, 50,
                                   s_numFramesInCurrentState - 30);
             drawCentredTextSlowly(kTextFromSpace, sizeof(kTextFromSpace) - 1, kDisplayWidth >> 1,
@@ -743,6 +746,7 @@ struct GameState
                 s_numLives = kNumLives;
                 s_score    = 0;
                 s_level    = 0;
+                ButtonRecorder::RecordingEnable(true);
                 ChangeState(State::GameStartLevel);
             }
             break;
@@ -857,6 +861,7 @@ void InvadersFromSpace::Init()
 
 void InvadersFromSpace::UpdateAndRender(DisplayList& displayList, float dt)
 {
+    ButtonRecorder::Update();
     GameState::Update(GameState::Duration(dt));
     displayList.PushRasterDisplay(s_rasterDisplay);
 }
