@@ -49,7 +49,7 @@ public:
 };
 static SpinnyCubeDemo s_spinnyCubeDemo;
 
-static void drawCube(DisplayList& displayList, const FixedTransform3D& worldToView, Intensity intensity,
+static void drawCube(DisplayList& displayList, const Camera& camera, Intensity intensity,
                      SinTable::Index x, SinTable::Index y, SinTable::Index z,
                      const StandardFixedTranslationVector& position)
 {
@@ -58,7 +58,7 @@ static void drawCube(DisplayList& displayList, const FixedTransform3D& worldToVi
     modelToWorld.setRotationXYZ(x, y, z);
     modelToWorld.setTranslation(position);
 
-    kCubeShape.Draw(displayList, modelToWorld, worldToView, intensity);
+    kCubeShape.Draw(displayList, modelToWorld, camera, intensity);
 }
 
 void SpinnyCubeDemo::UpdateAndRender(DisplayList& displayList, float dt)
@@ -66,8 +66,16 @@ void SpinnyCubeDemo::UpdateAndRender(DisplayList& displayList, float dt)
     static SinTable::Index x = 0;
     static SinTable::Index y = 0;
     static SinTable::Index z = 0;
-    dt *= 0.5f;
+    static SinTable::Index c = 0;
     SinTable::Index t = dt;
+
+    c += t * 0.8f;
+    if (c > (kPi * 2.f))
+    {
+        c -= kPi * 2.f;
+    }
+
+    t *= 0.8f; // Global spinny speed adjust
 
     // Modify the rotation angles of the spinny cube
     x += t * 0.5f;
@@ -86,15 +94,21 @@ void SpinnyCubeDemo::UpdateAndRender(DisplayList& displayList, float dt)
         z -= kPi * 2.f;
     }
 
-    FixedTransform3D worldToView;
-    worldToView.setAsIdentity();
+    FixedTransform3D viewToWorld;
+    viewToWorld.setAsIdentity();
+    viewToWorld.t.z = ((StandardFixedTranslationScalar) SinTable::LookUp(c)) * 4.f;
+
+    Camera camera;
+    camera.SetCameraToWorld(viewToWorld);
+    camera.Calculate();
 
     static const SinTable::Index gap = 0.1f;
     typedef FixedPoint<6,0,int32_t,int32_t,false> IntT;
-    for(uint32_t i = 0; i < 10; ++i)
+    const uint32_t kNumCubes = 1;
+    for(uint32_t i = 0; i < kNumCubes; ++i)
     {
-        drawCube(displayList, worldToView, 0.7f,
+        drawCube(displayList, camera, 0.7f,
                  x + (gap * 0.5f * (IntT)i), y + (gap * 0.7f * (IntT)i), z + (gap * 0.8f * (IntT)i),
-                 StandardFixedTranslationVector(0, 0, i * 2));
+                 StandardFixedTranslationVector(0, 0, 2 + i * 4));
     }
 }
