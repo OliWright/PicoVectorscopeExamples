@@ -20,6 +20,7 @@ add_compile_options(-Wall
         -Wno-format          # int != int32_t as far as the compiler is concerned because gcc has int32_t as long int
         -Wno-unused-function # we have some for the docs that aren't called
         -Wno-maybe-uninitialized
+        -Wno-psabi
         )
 
 add_executable(${PROJECT_NAME})
@@ -35,11 +36,12 @@ target_sources(${PROJECT_NAME} PRIVATE
         src/invadersfromspace.cpp
         src/invadersfromspacesprites.cpp
         src/image.cpp
-        src/rickroll.cpp
+        #src/rickroll.cpp
         src/spacerocksinspace.cpp
         src/spiral.cpp
         src/starfield.cpp
         src/textmode.cpp
+        src/cube.cpp
 )
 
 # Configure stdio
