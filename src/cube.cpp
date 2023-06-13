@@ -104,8 +104,8 @@ void SpinnyCubeDemo::UpdateAndRender(DisplayList& displayList, float dt)
 
     static const SinTable::Index gap = 0.1f;
     typedef FixedPoint<6,0,int32_t,int32_t,false> IntT;
-    const uint32_t kNumCubes = 1;
-    for(uint32_t i = 0; i < kNumCubes; ++i)
+    const uint kNumCubes = 1;
+    for(uint i = 0; i < kNumCubes; ++i)
     {
         drawCube(displayList, camera, 0.7f,
                  x + (gap * 0.5f * (IntT)i), y + (gap * 0.7f * (IntT)i), z + (gap * 0.8f * (IntT)i),
